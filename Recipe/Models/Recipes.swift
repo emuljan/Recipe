@@ -6,15 +6,15 @@
 //
 
 struct RecipesResponse {
-    let recipes: [Recipe]
+  let recipes: [Recipe]
 }
 
 struct Recipe {
-    let cuisine: String
-    let name: String
-    let photoLargeUrl: String?
-    let photoSmallUrl: String?
-    let uuid: String
-    let sourceUrl: String?
-    let youtubeUrl: String?
+  let cuisine: String
+  let name: String
+  let photoLargeUrl: String?
+  let photoSmallUrl: String?
+  let uuid: String
+  let sourceUrl: String?
+  let youtubeUrl: String?
 }
