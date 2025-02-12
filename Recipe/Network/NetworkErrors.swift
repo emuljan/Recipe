@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Represents various network-related errors that can occur in API requests.
 enum NetworkError: Error, LocalizedError {
   case unknownError(Int)
   case networkError(String)
