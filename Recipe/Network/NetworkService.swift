@@ -140,6 +140,7 @@ final class NetworkService: NetworkProtocol {
   private func decodeData<T: Decodable>(data: Data) throws -> T {
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .iso8601
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
     
     do {
       return try decoder.decode(T.self, from: data)

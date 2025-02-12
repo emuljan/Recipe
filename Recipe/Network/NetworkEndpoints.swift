@@ -27,6 +27,7 @@ protocol Endpoint {
 /// Provides default values for the `Endpoint` properties.
 extension Endpoint {
   var body: Encodable? { nil }
+  var path: String? { nil }
   var headers: [String: String] { ["Content-Type": "application/json"] }
   var queryParameters: [String: String]? { nil }
 }
@@ -48,4 +49,16 @@ struct APIConstants {
       }
     }
   }
+}
+
+
+enum RecipesEndpoint: Endpoint {
+  case recipes
+
+    var method: HTTPMethod {
+        switch self {
+        case .recipes:
+            return .get
+        }
+    }
 }
