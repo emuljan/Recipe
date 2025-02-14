@@ -10,9 +10,74 @@ import SwiftUI
 struct RecipesView: View {
   @Environment(RecipesViewModel.self) private var viewModel
   
+  @State private var searchQuery = ""
+  @State private var selectedSortOption = SortOption.name
+  @State private var selectedCuisineFilter: String? = nil
+  
+  enum SortOption: String, CaseIterable {
+    case name = "Name"
+    case cuisine = "Cuisine"
+  }
+  
+  var filteredAndSortedRecipes: [Recipe] {
+    var filteredRecipes = viewModel.recipes
+    
+    if !searchQuery.isEmpty {
+      filteredRecipes = filteredRecipes.filter {
+        $0.name.lowercased().contains(searchQuery.lowercased()) ||
+        $0.cuisine.lowercased().contains(searchQuery.lowercased())
+      }
+    }
+    
+    if let cuisine = selectedCuisineFilter, !cuisine.isEmpty {
+      filteredRecipes = filteredRecipes.filter { $0.cuisine == cuisine }
+    }
+    
+    switch selectedSortOption {
+    case .name:
+      filteredRecipes.sort { $0.name < $1.name }
+    case .cuisine:
+      filteredRecipes.sort { $0.cuisine < $1.cuisine }
+    }
+    
+    return filteredRecipes
+  }
+  
   var body: some View {
     NavigationStack {
-      Group {
+      VStack {
+        TextField("Search recipes...", text: $searchQuery)
+          .padding()
+          .textFieldStyle(RoundedBorderTextFieldStyle())
+          .padding(.horizontal)
+        
+        HStack {
+          Picker("Sort", selection: $selectedSortOption) {
+            ForEach(SortOption.allCases, id: \.self) { option in
+              Text(option.rawValue)
+            }
+          }
+          .pickerStyle(MenuPickerStyle())
+          .padding(.horizontal)
+          
+          Menu {
+            Button("All") {
+              selectedCuisineFilter = nil
+            }
+            ForEach(viewModel.uniqueCuisines, id: \.self) { cuisine in
+              Button(cuisine) {
+                selectedCuisineFilter = cuisine
+              }
+            }
+          } label: {
+            Text(selectedCuisineFilter ?? "All Cuisines")
+              .padding()
+              .background(Color.gray.opacity(0.2))
+              .cornerRadius(8)
+          }
+          .padding(.horizontal)
+        }
+        
         if viewModel.isLoading {
           ProgressView("Loading Recipes...")
             .padding()
@@ -21,12 +86,12 @@ struct RecipesView: View {
             Text(errorMessage).background(Color.red)
           }
         } else {
-          List(viewModel.recipes, id: \.uuid) { recipe in
+          List(filteredAndSortedRecipes, id: \.uuid) { recipe in
             NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
               RecipeRowView(recipe: recipe)
             }
+            .buttonStyle(PlainButtonStyle())
           }
-          .navigationTitle("Recipe Details")
           .refreshable {
             if !viewModel.isLoading {
               await viewModel.getRecipes()

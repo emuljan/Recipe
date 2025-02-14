@@ -15,7 +15,11 @@ class RecipesViewModel {
   var recipes: [Recipe] = []
   var errorMessage: String?
   var isLoading = false
-
+  
+  var uniqueCuisines: [String] {
+    Array(Set(recipes.map { $0.cuisine })).sorted()
+  }
+  
   init(recipeService: RecipesService) {
     self.recipeService = recipeService
   }
@@ -23,13 +27,13 @@ class RecipesViewModel {
   @MainActor
   func getRecipes() async {
     isLoading = true
-    defer { isLoading = false }
     
     do {
       recipes = try await recipeService.getRecipes()
     } catch {
       errorMessage = "Failed to fetch recipes: \(error.localizedDescription)"
     }
+    isLoading = false
   }
   
   @MainActor

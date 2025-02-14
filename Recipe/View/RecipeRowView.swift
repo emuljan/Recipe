@@ -24,6 +24,10 @@ struct RecipeRowView: View {
           .foregroundColor(.secondary)
         if let recipe = recipe.youtubeUrl, let url = URL(string: recipe) {
           Link("Watch the recipe on YouTube", destination: url)
+            .foregroundColor(.blue)
+            .onTapGesture {
+              UIApplication.shared.open(url)
+            }
         }
       }
       Spacer()
