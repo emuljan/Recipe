@@ -108,10 +108,8 @@ final class NetworkService: NetworkProtocol {
         throw NetworkError.decodingFailed(message: "Failed to encode request body: \(error.localizedDescription)")
       }
     }
-    
     return request
   }
-
   
   /// Validates the HTTP response status code.
   /// - Parameter response: The `HTTPURLResponse` to validate.
