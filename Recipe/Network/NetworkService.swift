@@ -94,19 +94,13 @@ final class NetworkService: NetworkProtocol {
   /// - Returns: A configured `URLRequest` ready for execution.
   /// - Throws: `NetworkError`if request can not be formed.
   private func createRequest(from endpoint: Endpoint) throws -> URLRequest {
-    guard var urlComponents = URLComponents(string: APIConstants.environment.baseURL + (endpoint.path ?? "")) else {
+    guard let url = endpoint.fullURL else {
       throw NetworkError.invalidURL
     }
     
-    if let queryParams = endpoint.queryParameters {
-      urlComponents.queryItems = queryParams.map { URLQueryItem(name: $0.key, value: $0.value) }
-    }
-    
-    guard let url = urlComponents.url else { throw NetworkError.invalidURL }
     var request = URLRequest(url: url)
     request.httpMethod = endpoint.method.rawValue
     request.allHTTPHeaderFields = endpoint.headers
-    
     if let body = endpoint.body {
       do {
         request.httpBody = try JSONEncoder().encode(body)
@@ -114,8 +108,10 @@ final class NetworkService: NetworkProtocol {
         throw NetworkError.decodingFailed(message: "Failed to encode request body: \(error.localizedDescription)")
       }
     }
+    
     return request
   }
+
   
   /// Validates the HTTP response status code.
   /// - Parameter response: The `HTTPURLResponse` to validate.

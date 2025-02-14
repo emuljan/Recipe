@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct RecipeApp: App {
+  private let recipesService = RecipesService()
+  
   var body: some Scene {
     WindowGroup {
+      let viewModel = RecipesViewModel(recipeService: recipesService)
       RecipesView()
+        .environment(viewModel)
     }
   }
 }
