@@ -13,6 +13,7 @@ struct RecipesView: View {
   @State private var searchQuery = ""
   @State private var selectedSortOption = SortOption.name
   @State private var selectedCuisineFilter: String? = nil
+  @FocusState private var isSearchFieldFocused: Bool
   
   enum SortOption: String, CaseIterable {
     case name = "Name"
@@ -50,7 +51,7 @@ struct RecipesView: View {
           .padding()
           .textFieldStyle(RoundedBorderTextFieldStyle())
           .padding(.horizontal)
-        
+          .focused($isSearchFieldFocused)
         HStack {
           Picker("Sort", selection: $selectedSortOption) {
             ForEach(SortOption.allCases, id: \.self) { option in
@@ -104,6 +105,9 @@ struct RecipesView: View {
         if viewModel.recipes.isEmpty {
           await viewModel.getRecipes()
         }
+      }
+      .onTapGesture {
+        isSearchFieldFocused = false
       }
     }
   }
