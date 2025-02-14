@@ -7,20 +7,37 @@
 
 import SwiftUI
 
+@Observable
 class RecipesViewModel {
   private let recipeService: RecipesService
-  @Published var recipes: [Recipe] = []
-  @Published var errorMessage: String?
   
+  var recipes: [Recipe] = []
+  var errorMessage: String?
+  var isLoading = false
+
   init(recipeService: RecipesService) {
     self.recipeService = recipeService
   }
   
+  @MainActor
   func getRecipes() async {
+    isLoading = true
+    defer { isLoading = false }
+    
     do {
       recipes = try await recipeService.getRecipes()
     } catch {
-      errorMessage = "Failed to fetch users: \(error.localizedDescription)"
+      errorMessage = "Failed to fetch recipes: \(error.localizedDescription)"
+    }
+  }
+  
+  @MainActor
+  func loadImage(url: String) async -> UIImage? {
+    do {
+      return try await recipeService.getRecipeImage(from: url)
+    } catch {
+      print(" Failed to load image: \(error.localizedDescription)")
+      return nil
     }
   }
 }
