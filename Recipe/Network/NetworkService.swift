@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OSLog
 
 /// A protocol that abstracts `URLSession` to enable dependency injection and testing.
 protocol URLSessionProtocol {
@@ -79,11 +80,13 @@ final class NetworkService: NetworkProtocol {
   /// - Throws: `NetworkError if fails.
   private func performRequest(from endpoint: Endpoint) async throws -> (Data, HTTPURLResponse) {
     let request = try createRequest(from: endpoint)
+    logRequest(request)
     let (data, response) = try await session.data(for: request)
     
     guard let httpResponse = response as? HTTPURLResponse else {
       throw NetworkError.invalidResponse
     }
+    logResponse(httpResponse, data: data)
     
     try validateResponse(httpResponse)
     return (data, httpResponse)
@@ -159,4 +162,25 @@ final class NetworkService: NetworkProtocol {
     ]
     return .networkError(errorMapping[error.code] ?? error.localizedDescription)
   }
+  
+  private func logRequest(_ request: URLRequest) {
+      Logger.network.info("Request: \(request.httpMethod ?? "") \(request.url?.absoluteString ?? "")")
+      if let headers = request.allHTTPHeaderFields {
+          Logger.network.debug("Headers: \(headers.description)")
+      }
+      if let body = request.httpBody, let bodyString = String(data: body, encoding: .utf8) {
+          Logger.network.debug("Body: \(bodyString)")
+      }
+  }
+  
+  private func logResponse(_ response: HTTPURLResponse, data: Data) {
+      Logger.network.info("Response: \(response.statusCode)")
+      if let bodyString = String(data: data, encoding: .utf8) {
+          Logger.network.debug("Body: \(bodyString)")
+      }
+  }
+}
+
+extension Logger {
+    static let network = Logger(subsystem: "com.recipe.networking", category: "API")
 }

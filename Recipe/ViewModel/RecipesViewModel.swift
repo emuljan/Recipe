@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 @Observable
 class RecipesViewModel {
@@ -36,7 +37,7 @@ class RecipesViewModel {
     do {
       return try await recipeService.getRecipeImage(from: url)
     } catch {
-      print(" Failed to load image: \(error.localizedDescription)")
+      Logger.imageStorage.error("Failed to load image: \(error.localizedDescription)")
       return nil
     }
   }
