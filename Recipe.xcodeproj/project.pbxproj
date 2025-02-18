@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C9C4C4DD2D63E7D4003FAB78 /* Recipe.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = C9C4C4DC2D63E7D4003FAB78 /* Recipe.xctestplan */; };
+		C9C4C4E22D641AB8003FAB78 /* Readme.md in Sources */ = {isa = PBXBuildFile; fileRef = C9C4C4E12D641AB5003FAB78 /* Readme.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +33,7 @@
 		C91E09C02D5C0A060061D141 /* RecipeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RecipeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C91E09CA2D5C0A060061D141 /* RecipeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RecipeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9C4C4DC2D63E7D4003FAB78 /* Recipe.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Recipe.xctestplan; sourceTree = "<group>"; };
+		C9C4C4E12D641AB5003FAB78 /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,6 +82,7 @@
 		C91E09A72D5C0A000061D141 = {
 			isa = PBXGroup;
 			children = (
+				C9C4C4E12D641AB5003FAB78 /* Readme.md */,
 				C9C4C4DC2D63E7D4003FAB78 /* Recipe.xctestplan */,
 				C91E09B22D5C0A000061D141 /* Recipe */,
 				C91E09C32D5C0A060061D141 /* RecipeTests */,
@@ -243,6 +246,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9C4C4E22D641AB8003FAB78 /* Readme.md in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
