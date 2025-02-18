@@ -47,5 +47,6 @@ struct RecipeRowView: View {
       }
     }
     .padding(.vertical, 5)
+    .padding(.horizontal, 10)
   }
 }

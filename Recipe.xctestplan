@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "8D286E34-397A-429E-9D04-680F890E82EF",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Recipe.xcodeproj",
+        "identifier" : "C91E09BF2D5C0A060061D141",
+        "name" : "RecipeTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Recipe.xcodeproj",
+        "identifier" : "C91E09C92D5C0A060061D141",
+        "name" : "RecipeUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

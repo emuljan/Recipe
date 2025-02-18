@@ -48,18 +48,17 @@ struct RecipesView: View {
     NavigationStack {
       VStack {
         TextField("Search recipes...", text: $searchQuery)
-          .padding()
           .textFieldStyle(RoundedBorderTextFieldStyle())
           .padding(.horizontal)
           .focused($isSearchFieldFocused)
-        HStack {
+        HStack(alignment: .center) {
           Picker("Sort", selection: $selectedSortOption) {
             ForEach(SortOption.allCases, id: \.self) { option in
               Text(option.rawValue)
             }
           }
+          .frame(width: 150, alignment: .leading)
           .pickerStyle(MenuPickerStyle())
-          .padding(.horizontal)
           
           Menu {
             Button("All") {
@@ -73,10 +72,9 @@ struct RecipesView: View {
           } label: {
             Text(selectedCuisineFilter ?? "All Cuisines")
               .padding()
-              .background(Color.gray.opacity(0.2))
               .cornerRadius(8)
           }
-          .padding(.horizontal)
+          .frame(width: 150, alignment: .leading)
         }
         
         if viewModel.isLoading {
@@ -91,7 +89,6 @@ struct RecipesView: View {
             NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
               RecipeRowView(recipe: recipe)
             }
-            .buttonStyle(PlainButtonStyle())
           }
           .refreshable {
             if !viewModel.isLoading {

@@ -36,11 +36,14 @@ protocol NetworkProtocol {
 /// Uses `URLSessionProtocol` to perform requests and allows dependency injection for testing.
 final class NetworkService: NetworkProtocol {
   private let session: URLSessionProtocol
+  private let logger: NetworkLoggerProtocol
   
   /// Initializes a new instance of `NetworkService`.
   /// - Parameter session: The URLSession abstraction for making requests (default: `URLSession.shared`).
-  init(session: URLSessionProtocol = URLSession.shared) {
+  init(session: URLSessionProtocol = URLSession.shared,
+       logger: NetworkLoggerProtocol = NetworkLogger()) {
     self.session = session
+    self.logger = logger
   }
   
   /// Fetches a decodable object from the given API endpoint.
@@ -73,30 +76,11 @@ final class NetworkService: NetworkProtocol {
     }
   }
   
-  // MARK: - Private Helpers
-  /// Executes a network request for the given endpoint.
-  /// - Parameter endpoint: The API endpoint containing request details.
-  /// - Returns: A tuple containing response `Data` and `HTTPURLResponse`.
-  /// - Throws: `NetworkError if fails.
-  private func performRequest(from endpoint: Endpoint) async throws -> (Data, HTTPURLResponse) {
-    let request = try createRequest(from: endpoint)
-    logRequest(request)
-    let (data, response) = try await session.data(for: request)
-    
-    guard let httpResponse = response as? HTTPURLResponse else {
-      throw NetworkError.invalidResponse
-    }
-    logResponse(httpResponse, data: data)
-    
-    try validateResponse(httpResponse)
-    return (data, httpResponse)
-  }
-  
   /// Creates a `URLRequest` from the given `Endpoint` configuration.
   /// - Parameter endpoint: The `Endpoint` object containing request details.
   /// - Returns: A configured `URLRequest` ready for execution.
   /// - Throws: `NetworkError`if request can not be formed.
-  private func createRequest(from endpoint: Endpoint) throws -> URLRequest {
+  internal func createRequest(from endpoint: Endpoint) throws -> URLRequest {
     guard let url = endpoint.fullURL else {
       throw NetworkError.invalidURL
     }
@@ -117,7 +101,7 @@ final class NetworkService: NetworkProtocol {
   /// Validates the HTTP response status code.
   /// - Parameter response: The `HTTPURLResponse` to validate.
   /// - Throws: `NetworkError ` if the response is invalid.
-  private func validateResponse(_ response: HTTPURLResponse) throws {
+  internal func validateResponse(_ response: HTTPURLResponse) throws {
     switch response.statusCode {
     case 200...299:
       return
@@ -128,6 +112,25 @@ final class NetworkService: NetworkProtocol {
     default:
       throw NetworkError.unknownError(response.statusCode)
     }
+  }
+  
+  // MARK: - Private Helpers
+  /// Executes a network request for the given endpoint.
+  /// - Parameter endpoint: The API endpoint containing request details.
+  /// - Returns: A tuple containing response `Data` and `HTTPURLResponse`.
+  /// - Throws: `NetworkError if fails.
+  private func performRequest(from endpoint: Endpoint) async throws -> (Data, HTTPURLResponse) {
+    let request = try createRequest(from: endpoint)
+    logger.logRequest(request)
+    let (data, response) = try await session.data(for: request)
+    
+    guard let httpResponse = response as? HTTPURLResponse else {
+      throw NetworkError.invalidResponse
+    }
+    logger.logResponse(httpResponse, data: data)
+    
+    try validateResponse(httpResponse)
+    return (data, httpResponse)
   }
   
   /// Decodes JSON data into the specified `Decodable` type.
@@ -162,25 +165,4 @@ final class NetworkService: NetworkProtocol {
     ]
     return .networkError(errorMapping[error.code] ?? error.localizedDescription)
   }
-  
-  private func logRequest(_ request: URLRequest) {
-      Logger.network.info("Request: \(request.httpMethod ?? "") \(request.url?.absoluteString ?? "")")
-      if let headers = request.allHTTPHeaderFields {
-          Logger.network.debug("Headers: \(headers.description)")
-      }
-      if let body = request.httpBody, let bodyString = String(data: body, encoding: .utf8) {
-          Logger.network.debug("Body: \(bodyString)")
-      }
-  }
-  
-  private func logResponse(_ response: HTTPURLResponse, data: Data) {
-      Logger.network.info("Response: \(response.statusCode)")
-      if let bodyString = String(data: data, encoding: .utf8) {
-          Logger.network.debug("Body: \(bodyString)")
-      }
-  }
-}
-
-extension Logger {
-    static let network = Logger(subsystem: "com.recipe.networking", category: "API")
 }

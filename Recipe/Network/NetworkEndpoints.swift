@@ -35,30 +35,26 @@ extension Endpoint {
   var queryParameters: [String: String]? { nil }
   
   var fullURL: URL? {
-      if let baseURL = baseURL, let path = path {
-          return URL(string: baseURL + path)
-      } else if let path = path {
-          return URL(string: path)
-      }
-      return nil
+    if let baseURL = baseURL, let path = path {
+      return URL(string: baseURL + path)
+    } else if let path = path {
+      return URL(string: path)
+    }
+    return nil
   }
 }
 
 /// API-related constants with base URL and environment configurations.
-struct APIConstants {
-  static var environment: Environment = .dev
+enum AppEnvironment {
+  case dev
+  case stage
+  case prod
   
-  enum Environment {
-    case dev
-    case stage
-    case prod
-    
-    var baseURL: String {
-      switch self {
-      case .dev: return "https://d3jbb8n5wk0qxi.cloudfront.net"
-      case .stage: return "https://d3jbb8n5wk0qxi.cloudfront.net" // If there are different environments
-      case .prod: return "https://d3jbb8n5wk0qxi.cloudfront.net" // If there are different environments
-      }
+  var baseURL: String {
+    switch self {
+    case .dev: return "https://d3jbb8n5wk0qxi.cloudfront.net"
+    case .stage: return "https://d3jbb8n5wk0qxi.cloudfront.net" // If there are different environments
+    case .prod: return "https://d3jbb8n5wk0qxi.cloudfront.net" // If there are different environments
     }
   }
 }
@@ -70,7 +66,7 @@ enum RecipesEndpoint: Endpoint {
   var baseURL: String? {
     switch self {
     case .recipes:
-      return APIConstants.environment.baseURL
+      return AppEnvironment.dev.baseURL
     case .image:
       return nil
     }
@@ -97,4 +93,14 @@ enum RecipesEndpoint: Endpoint {
       return [:]
     }
   }
+}
+
+struct APIConfiguration {
+  static var environment: AppEnvironment = {
+#if DEBUG
+    return .dev
+#else
+    return .prod
+#endif
+  }()
 }

@@ -10,17 +10,17 @@ import OSLog
 
 @Observable
 class RecipesViewModel {
-  private let recipeService: RecipesService
+  private let recipeService: RecipesServiceProtocol
   
   var recipes: [Recipe] = []
   var errorMessage: String?
   var isLoading = false
   
   var uniqueCuisines: [String] {
-    Array(Set(recipes.map { $0.cuisine })).sorted()
+    Array(Set(recipes.map { $0.cuisine.lowercased().capitalized })).sorted()
   }
   
-  init(recipeService: RecipesService) {
+  init(recipeService: RecipesServiceProtocol) {
     self.recipeService = recipeService
   }
   

@@ -45,4 +45,3 @@ final class RecipesService: RecipesServiceProtocol {
     return image
   }
 }
-

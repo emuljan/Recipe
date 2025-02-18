@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents various network-related errors that can occur in API requests.
-enum NetworkError: Error, LocalizedError {
+enum NetworkError: Error, LocalizedError, Equatable {
   case unknownError(Int)
   case networkError(String)
   case invalidURL
@@ -33,6 +33,19 @@ enum NetworkError: Error, LocalizedError {
       return "Client error occurred with status code \(code)."
     case .serverError(let code):
       return "Server error occurred with status code \(code)."
+    }
+  }
+  
+  static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
+    switch (lhs, rhs) {
+    case (.unknownError(let a), .unknownError(let b)): return a == b
+    case (.networkError(let a), .networkError(let b)): return a == b
+    case (.invalidURL, .invalidURL): return true
+    case (.invalidResponse, .invalidResponse): return true
+    case (.decodingFailed(let a), .decodingFailed(let b)): return a == b
+    case (.clientError(let a), .clientError(let b)): return a == b
+    case (.serverError(let a), .serverError(let b)): return a == b
+    default: return false
     }
   }
 }
